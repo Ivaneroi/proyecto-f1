@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/*Hace que cualquier ancla sea suave, haciendo que ir de una sección a otra sea un movimiento suave y fluido*/
+html {
+  scroll-behavior: smooth;
+}
+
+/* global (index.css o globals.css) */
+html {
+  scroll-behavior: smooth; /* transición suave nativa */
+}
+
+/* compensa la altura del header fijo (ej. 72px) */
+#info-general,
+#pilotos,
+#historia,
+#coche,
+#resultados,
+#sobre-el,
+#equipos,
+#estadisticas,
+#ultimos-resultados
+ {
+  scroll-margin-top: 150px; /* ajusta según la altura real de tu header */
+}
+
+
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/*tipografías*/
+
+.f1-title { /*En talwind.config.js no se por qué no me deja poner las tipografías al igual que los colores, habrá que guardar los estilos en clases a la vieja usanza*/
+  font-family: "F1Title", sans-serif;
+}
+
+.f1-bold{
+  font-family: "F1Bold", sans-serif;
+}
+
+.f1-light{
+  font-family: "F1Light", sans-serif;
+}
+
+/*Colores*/
+.principal-background{
+  background-color: black;
+}
+
+.secundary-background{
+  background-color: #15151E;
+}
+
+.red-strong{
+  color: #E10600;
+}
+
+.white-words{
+  color: white;
+}
+
+.alternative-color1{
+  background-color: #F7DBA7;
+}
+
+.alternative-color2{
+  background-color: #7DAA92;
+}
+
+/*Calendario.jsx*/
+
+.fc-event-time{ /*Hora de los eventos*/
+  background-color: #E10600;
+}
+
+.fc{  /*Botones de arriba del Calendario*/
+
+  font-family: 'f1-title', sans-serif;
+
+}
+
+@font-face {
+  font-family: "f1-title";
+  src: url("/tipografia/f1-bold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.fc-button{ /*Color de los botones*/
+    background-color: #E10600 !important;
+
+}
+
+/*Aplicamos la tipografía a todo el calendario menos a algunos elementos que se ven afectados y no aparecen debido a que son una fuente de iconos de la librería. No afecta al diseño, es para evitar que queden abajo escondidos detrás del bg-color*/
+.fc, 
+.fc *:not(.fc-icon)::not(.fc-icon *) {
+  font-family: "f1-title", system-ui, sans-serif !important;
+}
+
+/* O más simple: forzar solo en el texto, pero no en los iconos */
+.fc .fc-toolbar h2,
+.fc .fc-daygrid-day-number,
+.fc .fc-event-title {
+  font-family: "f1-title", system-ui, sans-serif !important;
+}
+
+/* Las flechas siguen usando su fuente de iconos original */
+.fc .fc-icon-chevron-left::before,
+.fc .fc-icon-chevron-right::before {
+  color: white !important;
+}
+
+/*Margen para los meses del calendario y ponemos el texto en mayúsculas*/
+.fc-toolbar-title{
+  padding-top: 10%;
+  text-transform: uppercase; 
+}
+
+.fc-event {
+  border-color: #E10600!important;
+  background-color:  #E10600!important;
+  color: #15151E !important;
+}
+
+/*Guia*/
+
+/*Se aplica a todos los párrafos/contenidos de las secciones de la Guía de Principiantes, se pone aquí y no como clases de Tailwind para ahorrarse el poner el código en cada sección de forma individual*/
+[class^="section"] {
+  font-size: 1.875rem;   /* text-3xl */
+  line-height: 1.625;    /* leading-relaxed */
+  text-align: left;      /* text-left */
+  font-family: "F1Light", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+/*Por defecto los puntos no aparecen, así que fuerzo a que salgan en las clases que quiera yo personalmente*/
+.points{
+  list-style-type: disc; /* muestra puntos sólidos */
+  margin-left: 30px;     /* añade espacio a la izquierda para que se vean */
+}
+

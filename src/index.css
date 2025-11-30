@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import 'flowbite';
+
+
+/*Tipografías*/
+@font-face {
+  font-family: "F1Bold";
+  src: url("/tipografia/f1-bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "F1Light";
+  src: url("/tipografia/f1-light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "F1Title";
+  src: url("/tipografia/f1-title.ttf") format("truetype");
+}
