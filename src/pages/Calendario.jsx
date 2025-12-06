@@ -8,54 +8,71 @@ import { eventos } from "../data/eventos";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 
-
 export default function MiCalendario() {
-  
+
   return (
+    <div className="cont-page-calendar bg-black p-4 overflow-x-hidden">
 
+      <Menu />
 
- 
-    <div className="cont-page-calendar bg-black p-4">
+      <div className="text-white w-full max-w-full overflow-x-hidden">
 
-    <>
-     <Menu />
-    </>
-    <div className="h-screen w-auto  text-white">
-      
-    
-    <h1 className="title-calendar text-7xl f1-title">Horario de los GRANDES Premios</h1>
+        {/* Título RESPONSIVE para que NO desborde */}
+        <h1 className="
+          title-calendar 
+          f1-title 
+          text-center 
+          mx-auto
+          text-4xl 
+          sm:text-5xl 
+          md:text-6xl 
+          lg:text-7xl
+          px-2
+          break-words
+          max-w-[95vw]
+        ">
+          Horario de los GRANDES Premios
+        </h1>
 
+        {/* CONTENEDOR SEGURO para evitar desbordes */}
+        <div className="w-full max-w-full mt-6 overflow-x-hidden">
 
-     <FullCalendar
-  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-  initialView="dayGridMonth"
-  locale={esLocale}
-  events={eventos}  // <- aquí van tus eventos
-  headerToolbar={{
-    left: 'prev,next today',
-    center: 'title',
-    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-  }}
-  height="80%"
-   
-  // Para las horas en la vista semanal o diaria
-  slotLabelFormat={{
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false // usa formato 24h
-  }}
-  
-  // Para mostrar la hora de los eventos
-  eventTimeFormat={{
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }}
-/>
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            locale={esLocale}
+            events={eventos}
+            height="auto"
+
+            headerToolbar={{
+              left: "prev,next today",
+              center: "title",
+              right: "dayGridMonth,timeGridWeek,timeGridDay"
+            }}
+
+            slotLabelFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            }}
+
+            eventTimeFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            }}
+
+            /* --- AJUSTES RESPONSIVE --- */
+            contentHeight="auto"
+            handleWindowResize={true}
+            windowResize={() => {}}
+          />
+
+        </div>
+      </div>
+
+      <Footer />
 
     </div>
-          <Footer />
-
- </div>
   );
 }

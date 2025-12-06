@@ -6,9 +6,9 @@ import Sidecard_teams from "../../components/Sidecard_teams";
 import { obtenerEscuderiaPorSlug } from "../../services/apiService";
 
 export default function Sauber() {
-  const { equipoSlug } = useParams(); // Si usas ruta dinámica
-  const slug = equipoSlug || "kick-sauber"; // Fallback para ruta estática
-  
+  const { equipoSlug } = useParams();
+  const slug = equipoSlug || "kick-sauber";
+
   const [escuderia, setEscuderia] = useState(null);
   const [cargando, setCargando] = useState(true);
 
@@ -49,85 +49,108 @@ export default function Sauber() {
   }
 
   return (
-    <div className="cont-alpine bg-black text-white scroll-smooth">
+    <div className="cont-sauber bg-black text-white scroll-smooth">
       <Menu />
 
-      <div className="flex">
-        <div className="cont-sidecard">
+      {/* CONTENEDOR RESPONSIVE - Arreglado para iPad Pro */}
+      <div className="flex flex-col xl:flex-row max-w-[100vw] overflow-x-hidden">
+        {/* SIDECARD — SOLO EN PANTALLAS MUY GRANDES (1280px+) */}
+        <div className="hidden xl:block xl:w-1/4 p-4 flex-shrink-0">
           <Sidecard_teams team={escuderia.slug} />
         </div>
 
-        <div className="cont-general text-left p-8 rounded-md shadow-lg">
-          <header className="pb-10">
-            <h1 className="text-6xl text-center f1-title" style={{ color: escuderia.color_principal }}>
+        {/* CONTENIDO — 100% EN MÓVIL/TABLET/IPAD PRO */}
+        <div className="w-full xl:w-3/4 p-4 sm:p-6 md:p-8 text-left">
+          <header className="pb-10 text-center">
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl f1-title"
+              style={{ color: escuderia.color_principal }}
+            >
               {escuderia.nombre_completo || escuderia.nombre}
             </h1>
           </header>
 
-          <div className="flex lg:flex-row xl:pl-2 text-center">
-            <div className="lg:w-5/6">
-              <div className="cont-text pl-[450px]">
-                {/* INFORMACIÓN GENERAL */}
-                <section id="info-general" className="mb-10">
-                  <h2 className="text-4xl f1-bold">1. Información General</h2>
-                  <br />
-                  <div 
-                    className="text-2xl leading-relaxed f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: escuderia.info_general?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
+          <div className="space-y-16 text-justify">
+            {/* INFORMACIÓN GENERAL */}
+            <section id="info-general">
+              <h2 className="text-3xl md:text-4xl f1-bold">1. Información General</h2>
+              <br />
+              <div
+                className="text-xl md:text-2xl leading-relaxed f1-light"
+                dangerouslySetInnerHTML={{
+                  __html: escuderia.info_general?.replace(/\n/g, "<br />"),
+                }}
+              />
+            </section>
 
-                {/* PILOTOS */}
-                <section id="pilotos" className="mb-10">
-                  <h2 className="text-4xl f1-bold">2. Pilotos</h2>
-                  <br />
-                  <div 
-                    className="text-2xl leading-relaxed f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: escuderia.pilotos_actuales?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
+            {/* PILOTOS */}
+            <section id="pilotos">
+              <h2 className="text-3xl md:text-4xl f1-bold">2. Pilotos</h2>
+              <br />
+              <div
+                className="text-xl md:text-2xl leading-relaxed f1-light"
+                dangerouslySetInnerHTML={{
+                  __html: escuderia.pilotos_actuales?.replace(/\n/g, "<br />"),
+                }}
+              />
+            </section>
 
-                {/* HISTORIA */}
-                <section id="historia" className="mb-10">
-                  <h2 className="text-4xl f1-bold">3. Historia</h2>
-                  <br />
-                  <div 
-                    className="text-2xl leading-relaxed f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: escuderia.historia?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
+            {/* HISTORIA */}
+            <section id="historia">
+              <h2 className="text-3xl md:text-4xl f1-bold">3. Historia</h2>
+              <br />
+              <div
+                className="text-xl md:text-2xl leading-relaxed f1-light"
+                dangerouslySetInnerHTML={{
+                  __html: escuderia.historia?.replace(/\n/g, "<br />"),
+                }}
+              />
+            </section>
 
-                {/* COCHE Y MOTOR */}
-                <section id="coche" className="mb-10">
-                  <h2 className="text-4xl f1-bold">4. Coche y Motor</h2>
-                  <br />
-                  <h3 className="text-2xl underline f1-bold">{escuderia.coche_actual}</h3>
-                  <br />
-                  <div 
-                    className="text-2xl leading-relaxed f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: escuderia.info_tecnica?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
+            {/* COCHE Y MOTOR */}
+            <section id="coche">
+              <h2 className="text-3xl md:text-4xl f1-bold">4. Coche y Motor</h2>
+              <br />
+              <h3 className="text-xl md:text-2xl underline f1-bold">
+                {escuderia.coche_actual}
+              </h3>
+              <br />
+              <div
+                className="text-xl md:text-2xl leading-relaxed f1-light"
+                dangerouslySetInnerHTML={{
+                  __html: escuderia.info_tecnica?.replace(/\n/g, "<br />"),
+                }}
+              />
+            </section>
 
-                {/* RESULTADOS */}
-                <section id="resultados" className="mb-10">
-                  <h2 className="text-4xl f1-bold">5. Resultados Históricos</h2>
-                  <br />
-                  <ul className="list-disc list-inside text-2xl f1-light text-justify">
-                    <li><strong>Campeonatos de Constructores:</strong> {escuderia.campeonatos_constructores}</li>
-                    <li><strong>Campeonatos de Pilotos:</strong> {escuderia.campeonatos_pilotos}</li>
-                    <li><strong>Victorias totales:</strong> {escuderia.victorias_totales}</li>
-                    <li><strong>Podios totales:</strong> {escuderia.podios_totales}</li>
-                  </ul>
-                  <br />
-                  <div 
-                    className="text-2xl f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: escuderia.resultados_historicos?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
-              </div>
-            </div>
-
+            {/* RESULTADOS */}
+            <section id="resultados">
+              <h2 className="text-3xl md:text-4xl f1-bold">5. Resultados Históricos</h2>
+              <br />
+              <ul className="list-disc list-inside text-xl md:text-2xl f1-light">
+                <li>
+                  <strong>Campeonatos de Constructores:</strong>{" "}
+                  {escuderia.campeonatos_constructores}
+                </li>
+                <li>
+                  <strong>Campeonatos de Pilotos:</strong>{" "}
+                  {escuderia.campeonatos_pilotos}
+                </li>
+                <li>
+                  <strong>Victorias totales:</strong> {escuderia.victorias_totales}
+                </li>
+                <li>
+                  <strong>Podios totales:</strong> {escuderia.podios_totales}
+                </li>
+              </ul>
+              <br />
+              <div
+                className="text-xl md:text-2xl f1-light"
+                dangerouslySetInnerHTML={{
+                  __html: escuderia.resultados_historicos?.replace(/\n/g, "<br />"),
+                }}
+              />
+            </section>
           </div>
         </div>
       </div>

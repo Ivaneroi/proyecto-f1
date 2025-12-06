@@ -47,72 +47,73 @@ export default function Antonelli() {
   }
 
   return (
-    <div className="cont-albon bg-black text-white scroll-smooth">
+    <div className="cont-antonelli bg-black text-white scroll-smooth">
       <Menu />
 
-      <div className="flex">
-        <div className="cont-sidecard">
+      {/* CONTENEDOR RESPONSIVE */}
+      <div className="flex flex-col xl:flex-row max-w-[100vw] overflow-x-hidden">
+
+        {/* SIDECARD — SOLO EN PANTALLAS MUY GRANDES */}
+        <div className="hidden xl:block xl:w-1/4 p-4 flex-shrink-0">
           <Sidecard_pilots pilot={piloto.slug} />
         </div>
 
-        <div className="cont-general text-left p-8 rounded-md shadow-lg">
-          <header className="pb-10">
-            <h1 className="text-6xl text-center f1-title text-[#00A2A2]">
+        {/* CONTENIDO — 100% EN MÓVIL/TABLET/IPAD PRO */}
+        <div className="w-full xl:w-3/4 p-4 sm:p-6 md:p-8 text-left">
+          <header className="pb-10 text-center">
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl f1-title text-[#D9DDDC]">
               {piloto.nombre_completo}
             </h1>
           </header>
 
-          <div className="flex lg:flex-row xl:pl-2 text-center">
-            <div className="lg:w-5/6">
-              <div className="cont-text pl-[450px]">
-                {/* SOBRE ÉL */}
-                <section id="sobre-el" className="mb-10">
-                  <h2 className="text-4xl f1-bold">1. SOBRE ÉL</h2>
-                  <br />
-                  <div 
-                    className="text-2xl leading-relaxed f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: piloto.biografia?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
+          <div className="space-y-16 text-justify">
 
-                {/* EQUIPOS */}
-                <section id="equipos" className="mb-10">
-                  <h2 className="text-4xl f1-bold">2. EQUIPOS</h2>
-                  <br />
-                  <div 
-                    className="text-2xl leading-relaxed f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: piloto.historial_equipos?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
+            {/* SOBRE ÉL */}
+            <section id="sobre-el">
+              <h2 className="text-3xl md:text-4xl f1-bold">1. SOBRE ÉL</h2>
+              <br />
+              <div 
+                className="text-xl md:text-2xl leading-relaxed f1-light"
+                dangerouslySetInnerHTML={{ __html: piloto.biografia?.replace(/\n/g, '<br />') }}
+              />
+            </section>
 
-                {/* ESTADÍSTICAS */}
-                <section id="estadisticas" className="mb-10">
-                  <h2 className="text-4xl f1-bold">3. ESTADÍSTICAS</h2>
-                  <br />
-                  <ul className="list-disc list-inside text-2xl f1-light text-justify">
-                    <li><strong>Debut en F1:</strong> {piloto.debut}</li>
-                    <li><strong>Victorias:</strong> {piloto.victorias}</li>
-                    <li><strong>Podios:</strong> {piloto.podios}</li>
-                    <li><strong>Puntos totales:</strong> {piloto.puntos_totales}</li>
-                    <li><strong>Vueltas rápidas:</strong> {piloto.vueltas_rapidas}</li>
-                    <li><strong>Mejor posición final en el Campeonato:</strong> {piloto.mejor_posicion_campeonato}</li>
-                    <li><strong>Equipo actual:</strong> {piloto.equipo_actual}</li>
-                  </ul>
-                </section>
+            {/* EQUIPOS */}
+            <section id="equipos">
+              <h2 className="text-3xl md:text-4xl f1-bold">2. EQUIPOS</h2>
+              <br />
+              <div 
+                className="text-xl md:text-2xl leading-relaxed f1-light"
+                dangerouslySetInnerHTML={{ __html: piloto.historial_equipos?.replace(/\n/g, '<br />') }}
+              />
+            </section>
 
-                {/* ÚLTIMOS RESULTADOS */}
-                <section id="ultimos-resultados" className="mb-10">
-                  <h2 className="text-4xl f1-bold">4. ÚLTIMOS RESULTADOS</h2>
-                  <br />
-                  <div 
-                    className="text-2xl f1-light text-justify"
-                    dangerouslySetInnerHTML={{ __html: piloto.ultimos_resultados?.replace(/\n/g, '<br />') }}
-                  />
-                </section>
-              </div>
-            </div>
+            {/* ESTADÍSTICAS */}
+            <section id="estadisticas">
+              <h2 className="text-3xl md:text-4xl f1-bold">3. ESTADÍSTICAS</h2>
+              <br />
+              <ul className="list-disc list-inside text-xl md:text-2xl f1-light">
+                <li><strong>Debut en F1:</strong> {piloto.debut}</li>
+                <li><strong>Victorias:</strong> {piloto.victorias}</li>
+                <li><strong>Podios:</strong> {piloto.podios}</li>
+                <li><strong>Puntos totales:</strong> {piloto.puntos_totales}</li>
+                <li><strong>Vueltas rápidas:</strong> {piloto.vueltas_rapidas}</li>
+                <li><strong>Mejor posición final en el Campeonato:</strong> {piloto.mejor_posicion_campeonato}</li>
+                <li><strong>Equipo actual:</strong> {piloto.equipo_actual}</li>
+              </ul>
+            </section>
 
-           
+            {/* ÚLTIMOS RESULTADOS */}
+            <section id="ultimos-resultados">
+              <h2 className="text-3xl md:text-4xl f1-bold">4. ÚLTIMOS RESULTADOS</h2>
+              <br />
+              <div 
+                className="text-xl md:text-2xl leading-relaxed f1-light"
+                dangerouslySetInnerHTML={{ __html: piloto.ultimos_resultados?.replace(/\n/g, '<br />') }}
+              />
+            </section>
+
           </div>
         </div>
       </div>

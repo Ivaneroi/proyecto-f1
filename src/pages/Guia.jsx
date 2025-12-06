@@ -73,7 +73,7 @@ export default function () {
   }, [openSections]);
 
   return (
-    <div className="cont-guia bg-black text-white">
+<div className="cont-guia bg-black text-white overflow-x-hidden">
       <Menu />
 
       {/* Sección 1 */}

@@ -1,76 +1,154 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import confetti from "canvas-confetti";
+import { obtenerUltimaCarreraInicio, obtenerClasificacionPilotosInicio, obtenerClasificacionEquiposInicio } from "../services/apiService";
+import { obtenerImagenPiloto } from "../data/pilotosImagenes";
 
-const pilotos = [
-  //Array con el nombre e imagen de los pilotos
-  { pos: 1, nombre: "Verstappen", puntos: 400, img: "/Imagenes/verstappen.png" },
-  { pos: 2, nombre: "Hamilton", puntos: 350, img: "/Imagenes/hamilton.png" },
-  { pos: 3, nombre: "Leclerc", puntos: 340, img: "/Imagenes/leclerc.png" },
-  { pos: 4, nombre: "Norris", puntos: 320, img: "/Imagenes/norris.png" },
-  { pos: 5, nombre: "Sainz", puntos: 310, img: "/Imagenes/sainz.png" },
-  { pos: 6, nombre: "Alonso", puntos: 300, img: "/Imagenes/alonso.png" },
-  { pos: 7, nombre: "Russell", puntos: 290, img: "/Imagenes/russell.png" },
-  { pos: 8, nombre: "Lawson", puntos: 280, img: "/Imagenes/lawson.png" },
-  { pos: 9, nombre: "Piastri", puntos: 270, img: "/Imagenes/piastri.png" },
-  { pos: 10, nombre: "Stroll", puntos: 260, img: "/Imagenes/stroll.png" },
-  { pos: 11, nombre: "Gasly", puntos: 250, img: "/Imagenes/gasly.png" },
-  { pos: 12, nombre: "Ocon", puntos: 240, img: "/Imagenes/ocon.png" },
-  { pos: 13, nombre: "Tsunoda", puntos: 230, img: "/Imagenes/tsunoda.png" },
-  { pos: 14, nombre: "Albon", puntos: 220, img: "/Imagenes/albon.png" },
-  { pos: 15, nombre: "Hadjar", puntos: 210, img: "/Imagenes/hadjar.png" },
-  { pos: 16, nombre: "Hulkenberg", puntos: 200, img: "/Imagenes/hulkenberg.png" },
-  { pos: 17, nombre: "Colapinto", puntos: 190, img: "/Imagenes/colapinto.png" },
-  { pos: 18, nombre: "Bearman", puntos: 180, img: "/Imagenes/bearman.png" },
-  { pos: 19, nombre: "Antonelli", puntos: 170, img: "/Imagenes/antonelli.png" },
-  { pos: 20, nombre: "Bortoleto", puntos: 160, img: "/Imagenes/bortoleto.png" },
-];
-//Array con los equipos de F1
-const equipos = [
-  { pos: 1, nombre: "Red Bull", puntos: 650, img: "/Imagenes/redbull.png" },
-  { pos: 2, nombre: "Mercedes", puntos: 600, img: "/Imagenes/mercedes.png" },
-  { pos: 3, nombre: "Ferrari", puntos: 580, img: "/Imagenes/ferrari.png" },
-  { pos: 4, nombre: "McLaren", puntos: 540, img: "/Imagenes/mclaren.png" },
-  { pos: 5, nombre: "Aston Martin", puntos: 500, img: "/Imagenes/astonmartin.png" },
-  { pos: 6, nombre: "Alpine", puntos: 420, img: "/Imagenes/alpine.png" },
-  { pos: 7, nombre: "Williams", puntos: 350, img: "/Imagenes/williams.png" },
-  { pos: 8, nombre: "RB", puntos: 320, img: "/Imagenes/rb.png" },
-  { pos: 9, nombre: "Sauber", puntos: 300, img: "/Imagenes/sauber.png" },
-  { pos: 10, nombre: "Haas", puntos: 280, img: "/Imagenes/haas.png" },
-];
+// --- MAPEADOR DE LOGOS DE EQUIPOS ---
+function getTeamLogoPath(teamName) {
+  if (!teamName) return "/Imagenes/team-default.png";
+
+  const normalize = (s) =>
+    s
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const name = normalize(teamName);
+
+  const map = {
+    "alpine": "/Imagenes/alpine.png",
+    "aston": "/Imagenes/astonmartin.png",
+    "astonmartin": "/Imagenes/astonmartin.png",
+    "ferrari": "/Imagenes/ferrari.png",
+    "mclaren": "/Imagenes/mclaren.png", 
+    "mercedes": "/Imagenes/mercedes.png",
+    "red bull": "/Imagenes/redbull.png",
+    "racing bulls": "/Imagenes/racing-bulls.png",
+    "vcb racing bulls": "/Imagenes/racing-bulls.png",
+    "kick sauber": "/Imagenes/sauber.png",
+    "sauber": "/Imagenes/sauber.png",
+    "stake f1 team kick sauber": "/Imagenes/sauber.png",
+    "williams": "/Imagenes/williams.png",
+    "haas": "/Imagenes/haas.png",
+    "haas f1 team": "/Imagenes/haas.png"
+  };
+
+  if (map[name]) return map[name];
+
+  for (const key of Object.keys(map)) {
+    if (name.includes(key)) return map[key];
+  }
+
+  return "/Imagenes/team-default.png";
+}
+
+// --- MAPEADOR DE NOMBRES CORTOS DE EQUIPOS ---
+function getShortTeamName(teamName) {
+  if (!teamName) return teamName;
+
+  const normalize = (s) =>
+    s
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const name = normalize(teamName);
+
+  const shortNames = {
+    "alpine": "Alpine",
+    "aston": "Aston",
+    "astonmartin": "Aston",
+    "aston martin": "Aston",
+    "ferrari": "Ferrari",
+    "mclaren": "Mclaren",
+    "mercedes": "Mercedes",
+    "red bull": "Redbull",
+    "redbull": "Redbull",
+    "racing bulls": "RB",
+    "vcb racing bulls": "RB",
+    "kick sauber": "Sauber",
+    "sauber": "Sauber",
+    "stake f1 team kick sauber": "Sauber",
+    "williams": "Williams",
+    "haas": "Haas",
+    "haas f1 team": "Haas"
+  };
+
+  if (shortNames[name]) return shortNames[name];
+
+  for (const key of Object.keys(shortNames)) {
+    if (name.includes(key)) return shortNames[key];
+  }
+
+  return teamName;
+}
 
 export default function Content() {
   const canvasRef = useRef(null);
   const firstImgRef = useRef(null);
+  
+  const [ultimaCarrera, setUltimaCarrera] = useState(null);
+  const [pilotos, setPilotos] = useState([]);
+  const [equipos, setEquipos] = useState([]);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const img = firstImgRef.current;
-    const onLoad = () => fireConfetti();
-    // Si la imagen no está cargada, esperamos al load; si ya lo está, disparamos ya.
-    if (img && !img.complete) {
-      img.addEventListener("load", onLoad);
-      return () => img.removeEventListener("load", onLoad);
-    } else {
-      fireConfetti();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const cargarDatos = async () => {
+      try {
+        setCargando(true);
+        
+        const [carreraData, pilotosData, equiposData] = await Promise.all([
+          obtenerUltimaCarreraInicio(2025),
+          obtenerClasificacionPilotosInicio(2025),
+          obtenerClasificacionEquiposInicio(2025),
+        ]);
+
+        if (!carreraData.error) {
+          setUltimaCarrera(carreraData);
+        }
+        
+        setPilotos(pilotosData);
+        setEquipos(equiposData);
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarDatos();
   }, []);
 
-  function fireConfetti() { //Animación de confeti
-    if (typeof window === "undefined") return; // seguridad SSR
+  useEffect(() => {
+    if (!cargando && ultimaCarrera) {
+      const img = firstImgRef.current;
+      const onLoad = () => fireConfetti();
+      if (img && !img.complete) {
+        img.addEventListener("load", onLoad);
+        return () => img.removeEventListener("load", onLoad);
+      } else {
+        fireConfetti();
+      }
+    }
+  }, [cargando, ultimaCarrera]);
+
+  function fireConfetti() {
+    if (typeof window === "undefined") return;
 
     const canvas = canvasRef.current;
     const first = firstImgRef.current;
     if (!canvas || !first) return;
 
-    // instancia ligada al canvas, se ajusta al tamaño del viewport
     const myConfetti = confetti.create(canvas, { resize: true, useWorker: true });
 
-    // posición del elemento en la ventana (viewport)
     const rect = first.getBoundingClientRect();
     const originX = (rect.left + rect.width / 2) / window.innerWidth;
     const originY = ((rect.top + rect.height / 2) / window.innerHeight) + 0.3;
 
-    // disparo principal
     myConfetti({
       particleCount: 140,
       spread: 70,
@@ -79,7 +157,6 @@ export default function Content() {
       origin: { x: originX, y: originY },
     });
 
-    // puff extra para más efecto
     setTimeout(() => {
       myConfetti({
         particleCount: 60,
@@ -90,141 +167,206 @@ export default function Content() {
     }, 300);
   }
 
+  if (cargando) {
+    return (
+      <div className="principal-content bg-black min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500 mb-4"></div>
+          <p className="text-2xl f1-light text-gray-400">Cargando resultados...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="principal-content bg-black">
-      {/* Canvas en primer plano para el confeti */}
+    <div className="principal-content bg-black overflow-x-hidden">
       <canvas
         ref={canvasRef}
         className="pointer-events-none fixed inset-0 z-50"
         style={{ width: "100%", height: "100%" }}
       />
 
-      {/*Nombre del GRAN PREMIO */}
-      <div className="cont-grand-prix-name h-[200px] w-full pt-10">
-        <h1 className="title-gp f1-title text-6xl text-white">
-          GRAN PREMIO DE AZERBAIYAN <span className="red-strong">2025</span>
+      {/* Nombre del GRAN PREMIO - Responsive */}
+      <div className="cont-grand-prix-name min-h-[150px] md:h-[200px] w-full pt-6 md:pt-10 px-4">
+        <h1 className="title-gp f1-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white text-center">
+          {ultimaCarrera ? ultimaCarrera.carrera.nombre.toUpperCase() : "TEMPORADA"} <span className="red-strong">2025</span>
         </h1>
+        {ultimaCarrera && (
+          <p className="text-lg sm:text-xl md:text-2xl f1-light text-gray-400 text-center mt-2">
+            {ultimaCarrera.carrera.circuito} • {ultimaCarrera.carrera.pais}
+          </p>
+        )}
       </div>
 
-      {/*Podio*/}
-      <div className="container-podium h-[700px] w-full pt-15 flex justify-center">
-        <div className="place2 p-12 flex justify-center flex-col h-[600px] w-[300px]">
-          <img
-            className="w-full h-auto"
-            id="second-place"
-            src="/Imagenes/alonso.png"
-            alt="Alonso"
-          />
-          <img
-            className="step2  h-[300px] w-[300px]"
-            id="second-step"
-            src="/Imagenes/podium2.png"
-            alt="Podium 2"
-          />
-          <p className="text-white f1-light text-2xl">+18 PUNTOS</p>
-        </div>
-
-        <div className="place1 flex-col justify-center  h-[600px] w-[300px]">
-          <img
-            className="w-full h-auto cursor-pointer"
-            id="first-place"
-            src="/Imagenes/verstappen.png"
-            alt="Verstappen"
-            ref={firstImgRef}
-            onClick={fireConfetti} // click para repetir el confeti sin añadir botones
-          />
-          <img
-            className="step1  h-[300px] w-[270px] pl-6"
-            id="first-step"
-            src="/Imagenes/podium1.png"
-            alt="Podium 1"
-          />
-          <p className="text-white f1-light text-3xl">+25 PUNTOS</p>
-        </div>
-
-        <div className="place3 p-12 flex-col  h-[600px] w-[300px]">
-          <img
-            className=""
-            id="third-place"
-            src="/Imagenes/leclerc.png"
-            alt="Leclerc"
-          />
-          <img
-            className="step3  h-[300px] w-[300px]"
-            id="third-step"
-            src="/Imagenes/podium3.png"
-            alt="Podium 3"
-          />
-          <p className="text-white f1-light text-xl">+15 PUNTOS</p>
-        </div>
-      </div>
-
-      {/* Clasificación Pilotos + Equipos */}
-      <div className="clasification-cont grid grid-cols-2 gap-0 border-l border-r border-gray-400 mt-10">
-        <div className="cont-clasification-pilots border-r border-gray-400 p-4">
-          <h2 className="f1-bold text-white text-4xl mb-2">Pilotos</h2>
-          <div className="grid grid-cols-3 text-center">
-            <div className="f1-bold text-white border-b border-gray-300 p-4 text-2xl">
-              Pos
+      {/* Podio - Vertical en móvil, Horizontal en escritorio */}
+      {ultimaCarrera && ultimaCarrera.podio && ultimaCarrera.podio.length >= 3 && (
+        <div className="container-podium w-full py-8 px-4">
+          {/* MÓVIL/TABLET: Vertical (orden 1-2-3) */}
+          <div className="flex flex-col items-center gap-6 lg:hidden">
+            {/* 1º Puesto */}
+            <div className="place1 flex flex-col items-center w-full max-w-[300px]">
+              <img
+                className="w-full h-auto cursor-pointer"
+                src={obtenerImagenPiloto(ultimaCarrera.podio[0].apellido)}
+                alt={ultimaCarrera.podio[0].nombreCompleto}
+                ref={firstImgRef}
+                onClick={fireConfetti}
+                onError={(e) => { e.currentTarget.src = "/Imagenes/f1.png"; }}
+              />
+              <img className="h-[250px] w-[250px]" src="/Imagenes/podium1.png" alt="Podium 1" />
+              <p className="text-white f1-light text-2xl text-center">+{ultimaCarrera.podio[0].puntos} PUNTOS</p>
             </div>
-            <div className="f1-bold text-white border-b border-gray-300 p-4 text-2xl">
-              Nombre
+
+            {/* 2º Puesto */}
+            <div className="place2 flex flex-col items-center w-full max-w-[300px]">
+              <img
+                className="w-full h-auto"
+                src={obtenerImagenPiloto(ultimaCarrera.podio[1].apellido)}
+                alt={ultimaCarrera.podio[1].nombreCompleto}
+                onError={(e) => { e.currentTarget.src = "/Imagenes/f1.png"; }}
+              />
+              <img className="h-[250px] w-[250px]" src="/Imagenes/podium2.png" alt="Podium 2" />
+              <p className="text-white f1-light text-xl text-center">+{ultimaCarrera.podio[1].puntos} PUNTOS</p>
             </div>
-            <div className="f1-bold text-white border-b border-gray-300 p-4 text-2xl">
-              Puntos
+
+            {/* 3º Puesto */}
+            <div className="place3 flex flex-col items-center w-full max-w-[300px]">
+              <img
+                className="w-full h-auto"
+                src={obtenerImagenPiloto(ultimaCarrera.podio[2].apellido)}
+                alt={ultimaCarrera.podio[2].nombreCompleto}
+                onError={(e) => { e.currentTarget.src = "/Imagenes/f1.png"; }}
+              />
+              <img className="h-[250px] w-[250px]" src="/Imagenes/podium3.png" alt="Podium 3" />
+              <p className="text-white f1-light text-lg text-center">+{ultimaCarrera.podio[2].puntos} PUNTOS</p>
             </div>
-            {pilotos.map((p) => (
-              <React.Fragment key={p.pos}>
-                <div className="p-4 f1-light text-white text-2xl">{p.pos}</div>
-                <div className="photo-and-name-pilot flex  pl-24">
-                  <div className="cont-photo-pilot pb-5">
-                    <img
-                      className="photo-pilot1 h-[80px] w-[80px]"
-                      src={p.img}
-                      alt={p.nombre}
-                    />
+          </div>
+
+          {/* ESCRITORIO: Horizontal (orden 2-1-3) */}
+          <div className="hidden lg:flex justify-center h-[700px]">
+            {/* 2º Puesto */}
+            <div className="place2 p-12 flex justify-center flex-col h-[600px] w-[300px]">
+              <img
+                className="w-full h-auto"
+                src={obtenerImagenPiloto(ultimaCarrera.podio[1].apellido)}
+                alt={ultimaCarrera.podio[1].nombreCompleto}
+                onError={(e) => { e.currentTarget.src = "/Imagenes/f1.png"; }}
+              />
+              <img className="step2 h-[300px] w-[300px]" src="/Imagenes/podium2.png" alt="Podium 2" />
+              <p className="text-white f1-light text-2xl text-center">+{ultimaCarrera.podio[1].puntos} PUNTOS</p>
+            </div>
+
+            {/* 1º Puesto */}
+            <div className="place1 flex-col justify-center h-[600px] w-[300px]">
+              <img
+                className="w-full h-auto cursor-pointer"
+                src={obtenerImagenPiloto(ultimaCarrera.podio[0].apellido)}
+                alt={ultimaCarrera.podio[0].nombreCompleto}
+                ref={firstImgRef}
+                onClick={fireConfetti}
+                onError={(e) => { e.currentTarget.src = "/Imagenes/f1.png"; }}
+              />
+              <img className="step1 h-[300px] w-[270px] pl-6" src="/Imagenes/podium1.png" alt="Podium 1" />
+              <p className="text-white f1-light text-3xl text-center">+{ultimaCarrera.podio[0].puntos} PUNTOS</p>
+            </div>
+
+            {/* 3º Puesto */}
+            <div className="place3 p-12 flex-col h-[600px] w-[300px]">
+              <img
+                className=""
+                src={obtenerImagenPiloto(ultimaCarrera.podio[2].apellido)}
+                alt={ultimaCarrera.podio[2].nombreCompleto}
+                onError={(e) => { e.currentTarget.src = "/Imagenes/f1.png"; }}
+              />
+              <img className="step3 h-[300px] w-[300px]" src="/Imagenes/podium3.png" alt="Podium 3" />
+              <p className="text-white f1-light text-xl text-center">+{ultimaCarrera.podio[2].puntos} PUNTOS</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clasificación Pilotos + Equipos - Vertical en móvil/tablet, Horizontal en escritorio */}
+      <div className="clasification-cont grid grid-cols-1 lg:grid-cols-2 gap-0 border-l border-r border-gray-400 mt-10 mx-2 lg:mx-0">
+        
+        {/* Clasificación Pilotos */}
+        <div className="cont-clasification-pilots border-b lg:border-b-0 lg:border-r border-gray-400 p-2 md:p-4">
+          <h2 className="f1-bold text-white text-2xl md:text-3xl lg:text-4xl mb-2 text-center">Pilotos</h2>
+          
+          {/* Tabla responsive */}
+          <div className="overflow-x-auto">
+            <div className="grid grid-cols-3 text-center">
+              <div className="f1-bold text-white border-b border-gray-300 p-2 md:p-4 text-lg md:text-xl lg:text-2xl">Pos</div>
+              <div className="f1-bold text-white border-b border-gray-300 p-2 md:p-4 text-lg md:text-xl lg:text-2xl">Nombre</div>
+              <div className="f1-bold text-white border-b border-gray-300 p-2 md:p-4 text-lg md:text-xl lg:text-2xl">Puntos</div>
+              
+              {pilotos.map((p) => (
+                <React.Fragment key={p.numeroPiloto}>
+                  {/* Posición */}
+                  <div className="p-2 md:p-4 f1-light text-white text-base md:text-xl lg:text-2xl flex items-center justify-center">
+                    {p.posicion}
                   </div>
-                  <p className="p-4  f1-light text-white text-2xl f1-light">{p.nombre}</p>
-                </div>
-                <div className="p-4 f1-light text-white text-2xl">
-                  {p.puntos}
-                </div>
-              </React.Fragment>
-            ))}
+                  
+                  {/* Foto + Nombre - Centrado y alineado */}
+                  <div className="flex items-center p-2 md:p-4 gap-2 md:gap-3 lg:gap-4 lg:ml-28">
+                    <div className="flex-shrink-0">
+                      <img
+                        className="h-[60px] w-[60px] md:h-[80px] md:w-[80px] lg:h-[85px] lg:w-[60px] object-cover rounded"
+                        src={obtenerImagenPiloto(p.apellido)}
+                        alt={p.nombreCompleto}
+                        onError={(e) => { e.currentTarget.src = "/Imagenes/f1.png"; }}
+                      />
+                    </div>
+                    <p className="f1-light text-white text-xs md:text-base lg:text-2xl">{p.apellido}</p>
+                  </div>
+                  
+                  {/* Puntos */}
+                  <div className="p-2 md:p-4 f1-light text-white text-base md:text-xl lg:text-2xl flex items-center justify-center">
+                    {p.puntos}
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Clasificación Equipos */}
-        <div className="cont-clasification-teams p-4">
-          <h2 className="f1-bold text-white text-4xl mb-2">Equipos</h2>
-          <div className="grid grid-cols-3 text-center">
-            <div className="f1-bold text-white border-b border-gray-300 p-4 text-2xl">
-              Pos
-            </div>
-            <div className="f1-bold text-white border-b border-gray-300 p-4 text-2xl">
-              Equipo
-            </div>
-            <div className="f1-bold text-white border-b border-gray-300 p-4 text-2xl">
-              Puntos
-            </div>
-            {equipos.map((e) => (
-              <React.Fragment key={e.pos}>
-                <div className="p-4 f1-light text-white text-2xl">{e.pos}</div>
-                <div className="photo-and-name-team flex pl-9">
-                  <div className="cont-photo-team pb-5">
-                    <img
-                      className="photo-team h-[80px] w-[80px]"
-                      src={e.img}
-                      alt={e.nombre}
-                    />
+        <div className="cont-clasification-teams p-2 md:p-4">
+          <h2 className="f1-bold text-white text-2xl md:text-3xl lg:text-4xl mb-2 text-center">Equipos</h2>
+          
+          {/* Tabla responsive */}
+          <div className="overflow-x-auto">
+            <div className="grid grid-cols-[100px_1fr_120px] lg:grid-cols-[120px_1fr_150px]">
+              <div className="f1-bold text-white border-b border-gray-300 p-2 md:p-4 text-lg md:text-xl lg:text-2xl text-center">Pos</div>
+              <div className="f1-bold text-white border-b border-gray-300 p-2 md:p-4 text-lg md:text-xl lg:text-2xl text-center">Equipo</div>
+              <div className="f1-bold text-white border-b border-gray-300 p-2 md:p-4 text-lg md:text-xl lg:text-2xl text-center">Puntos</div>
+
+              {equipos.map((e) => (
+                <React.Fragment key={e.nombre}>
+                  {/* Posición */}
+                  <div className="p-2 md:p-4 f1-light text-white text-base md:text-xl lg:text-2xl flex items-center justify-center">
+                    {e.posicion}
                   </div>
-                  <p className="p-4 f1-light text-white text-2xl">{e.nombre}</p>
-                </div>
-                <div className="p-4 f1-light text-white text-2xl">
-                  {e.puntos}
-                </div>
-              </React.Fragment>
-            ))}
+
+                  {/* Logo + Nombre - Centrado y alineado */}
+                  <div className="flex items-center p-2 md:pl-44 md:p-4 gap-2 md:gap-3 lg:gap-4 lg:pl-96">
+                    <div className="flex-shrink-0">
+                      <img
+                        className="h-[50px] w-[50px] md:h-[60px] md:w-[60px] lg:h-[70px] lg:w-[70px] object-contain"
+                        src={getTeamLogoPath(e.nombre)}
+                        alt={e.nombre}
+                        onError={(ev) => { ev.currentTarget.src = "/Imagenes/team-default.png"; }}
+                      />
+                    </div>
+                    <p className="f1-light text-white text-xs md:text-base lg:text-2xl">{getShortTeamName(e.nombre)}</p>
+                  </div>
+
+                  {/* Puntos */}
+                  <div className="p-2 md:p-4 f1-light text-white text-base md:text-xl lg:text-2xl flex items-center justify-center">
+                    {e.puntos}
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
       </div>

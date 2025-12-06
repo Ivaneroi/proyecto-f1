@@ -165,6 +165,26 @@ html {
   color: #15151E !important;
 }
 
+.fc-scroller-harness{
+  background-color: #15151E !important;
+}
+
+/* Altura fija para las celdas del calendario */
+.fc-daygrid-day {
+  min-height: 120px !important;
+}
+
+/* Si quieres que la celda interna también respete esa altura */
+.fc-daygrid-day-frame {
+  height: 100% !important;
+}
+
+/* Asegurar que todas las filas tengan misma altura */
+.fc-daygrid-body tr {
+  height: 120px !important;
+}
+
+
 /*Guia*/
 
 /*Se aplica a todos los párrafos/contenidos de las secciones de la Guía de Principiantes, se pone aquí y no como clases de Tailwind para ahorrarse el poner el código en cada sección de forma individual*/
@@ -182,4 +202,3 @@ html {
   list-style-type: disc; /* muestra puntos sólidos */
   margin-left: 30px;     /* añade espacio a la izquierda para que se vean */
 }
-
